@@ -21,13 +21,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.garbagemule.MobArena.ArenaMasterImpl;
 import com.garbagemule.MobArena.MAMessages;
 import com.garbagemule.MobArena.commands.CommandHandler;
+import com.garbagemule.MobArena.custom.CustomConfiguration;
 import com.garbagemule.MobArena.framework.Arena;
 import com.garbagemule.MobArena.framework.ArenaMaster;
 import com.garbagemule.MobArena.health.HealthStrategy;
 import com.garbagemule.MobArena.health.HealthStrategyHeroes;
 import com.garbagemule.MobArena.health.HealthStrategyStandard;
 import com.garbagemule.MobArena.listeners.MAGlobalListener;
-import com.garbagemule.MobArena.listeners.MagicSpellsListener;
 import com.garbagemule.MobArena.listeners.SpoutScreenListener;
 import com.garbagemule.MobArena.mortl8324.Methods;
 import com.garbagemule.MobArena.util.FileUtils;
@@ -43,6 +43,7 @@ import com.garbagemule.MobArena.waves.ability.AbilityManager;
 public class MobArena extends JavaPlugin
 {
     private Config config;
+    private CustomConfiguration customConfig;
     private ArenaMaster arenaMaster;
     
     // Inventories from disconnects
@@ -67,6 +68,8 @@ public class MobArena extends JavaPlugin
         FileUtils.extractResource(this.getDataFolder(), "config.yml");
         loadConfigFile();
         
+        customConfig = new CustomConfiguration(this);
+        
         // Load boss abilities
         loadAbilities();
         
@@ -74,7 +77,6 @@ public class MobArena extends JavaPlugin
         setupVault();
         setupHeroes();
         setupSpout();
-        setupMagicSpells();
         setupStrategies();
         
         // Set up the ArenaMaster
@@ -131,6 +133,8 @@ public class MobArena extends JavaPlugin
         CommandHandler handler = new CommandHandler(this);
         getCommand("ma").setExecutor(handler);
         getCommand("mobarena").setExecutor(handler);
+        getCommand("arenas").setExecutor(handler);
+        getCommand("leave").setExecutor(handler);
         
         PluginManager pm = this.getServer().getPluginManager();
         pm.registerEvents(new MAGlobalListener(this, arenaMaster), this);
@@ -181,13 +185,6 @@ public class MobArena extends JavaPlugin
         if (spoutPlugin == null) return;
         
         hasSpout = true;
-    }
-    
-    private void setupMagicSpells() {
-        Plugin spells = this.getServer().getPluginManager().getPlugin("MagicSpells");
-        if (spells == null) return;
-        
-        this.getServer().getPluginManager().registerEvents(new MagicSpellsListener(this), this);
     }
     
     private void setupStrategies() {
@@ -284,5 +281,9 @@ public class MobArena extends JavaPlugin
             return economy.format(amount);
         }
         return null;
+    }
+    
+    public CustomConfiguration getCustomConfig() {
+        return customConfig;
     }
 }
