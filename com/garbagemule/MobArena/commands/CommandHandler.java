@@ -16,6 +16,7 @@ import com.garbagemule.MobArena.commands.user.*;
 import com.garbagemule.MobArena.commands.admin.*;
 import com.garbagemule.MobArena.commands.setup.*;
 import com.garbagemule.MobArena.framework.ArenaMaster;
+import com.garbagemule.MobArena.mortl8324.Methods;
 
 public class CommandHandler implements CommandExecutor
 {
@@ -36,6 +37,14 @@ public class CommandHandler implements CommandExecutor
         // Grab the base and arguments.
         String base = (args.length > 0 ? args[0] : "");
         String last = (args.length > 0 ? args[args.length - 1] : "");
+        
+        if (label.equalsIgnoreCase("arenas")) {
+        	commands.get("arena|arenas|open|open.*|openarena.*").execute(am, sender);
+        	return true;
+        }
+        else if (label.equalsIgnoreCase("leave")) {
+        	commands.get("l|le((.*))?").execute(am, sender);
+        }
         
         // If there's no base argument, show a helpful message.
         if (base.equals("")) {
@@ -158,6 +167,7 @@ public class CommandHandler implements CommandExecutor
         register(NotReadyCommand.class);
         register(SpecCommand.class);
         register(PlayerListCommand.class);
+        register(ArenasAvailableCommand.class);
         
         // mobarena.admin
         register(DisableCommand.class);

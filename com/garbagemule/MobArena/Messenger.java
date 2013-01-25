@@ -17,7 +17,7 @@ public class Messenger
 {
     private static final Logger log = Logger.getLogger("Minecraft");
     
-    private static final String prefix = "[MobArena] ";
+    private static final String prefix = ChatColor.WHITE + "[" + ChatColor.DARK_RED + "Horde" + ChatColor.WHITE + "] ";
     
     private Messenger() {}
     
@@ -38,7 +38,7 @@ public class Messenger
                 logo = msg.getLogo();
 
             // Send the notification.
-            sp.sendNotification("MobArena", text, logo, (short) 0, 2000);
+            sp.sendNotification(prefix, text, logo, (short) 0, 2000);
             return true;
         }
         else {
@@ -64,8 +64,18 @@ public class Messenger
             return false;
 
         // Otherwise, send the message with the [MobArena] tag.
-        p.sendMessage(ChatColor.GREEN + "[MobArena] " + ChatColor.WHITE + msg);
+        p.sendMessage(prefix + msg);
         return true;
+    }
+    
+    public static boolean tellPlayerNoPrefix(CommandSender p, String msg) {
+    	// If the input sender is null or the string is empty, return.
+    	if (p == null || msg.equals(" "))
+    		return false;
+    	
+    	// Otherwise, send the message with the [MobArena] tag.
+    	p.sendMessage(msg);
+    	return true;
     }
 
     public static boolean tellPlayer(CommandSender p, Msg msg, String s, boolean spout, Material logo) {

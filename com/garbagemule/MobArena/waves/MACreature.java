@@ -84,7 +84,8 @@ public enum MACreature
     WITHER(EntityType.WITHER),            WITHERS(EntityType.WITHER),
     WITHERSKELETON(EntityType.SKELETON),  WITHERSKELETONS(EntityType.SKELETON),
     BABYZOMBIE(EntityType.ZOMBIE),        BABYZOMBIES(EntityType.ZOMBIE),
-    ZOMBIEVILLAGER(EntityType.ZOMBIE),    ZOMBIEVILLAGERS(EntityType.ZOMBIE);
+    ZOMBIEVILLAGER(EntityType.ZOMBIE),    ZOMBIEVILLAGERS(EntityType.ZOMBIE),
+    BABYVILLAGERZOMBIE(EntityType.ZOMBIE), BABYVILLAGERZOMBIES(EntityType.ZOMBIE);
     
     private List<DyeColor> colors = Arrays.asList(DyeColor.values());
     private EntityType type;
@@ -152,10 +153,6 @@ public enum MACreature
             case SKELETONS:
                 ((Skeleton) e).getEquipment().setItemInHand(new ItemStack(Material.BOW, 1));
             	break;
-            case ZOMBIEPIGMAN:
-            case ZOMBIEPIGMEN:
-            	((PigZombie) e).getEquipment().setItemInHand(new ItemStack(Material.GOLD_SWORD, 1));
-            	break;
             case ZOMBIEVILLAGER:
             case ZOMBIEVILLAGERS:
                 ((Zombie) e).setVillager(true);
@@ -163,7 +160,12 @@ public enum MACreature
             case BABYZOMBIE:
             case BABYZOMBIES:
                 ((Zombie) e).setBaby(true);
+                ((Zombie) e).setBaby(false);
                 break;
+            case BABYVILLAGERZOMBIE:
+            case BABYVILLAGERZOMBIES:
+            	((Zombie) e).setBaby(true);
+            	((Zombie) e).setVillager(true);
             case WITHERSKELETON:
             case WITHERSKELETONS:
                 ((Skeleton) e).getEquipment().setItemInHand(new ItemStack(Material.STONE_SWORD, 1));

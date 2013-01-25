@@ -36,6 +36,7 @@ import com.garbagemule.MobArena.log.LogSessionBuilder;
 import com.garbagemule.MobArena.log.LogTotalsBuilder;
 import com.garbagemule.MobArena.log.YMLSessionBuilder;
 import com.garbagemule.MobArena.log.YMLTotalsBuilder;
+import com.garbagemule.MobArena.mortl8324.Methods;
 import com.garbagemule.MobArena.region.ArenaRegion;
 import com.garbagemule.MobArena.repairable.*;
 import com.garbagemule.MobArena.spout.Spouty;
@@ -111,6 +112,7 @@ public class ArenaImpl implements Arena
     private ArenaListener eventListener;
     private List<ItemStack> entryFee;
     private TimeStrategy timeStrategy;
+    private String arenaName;
     private AutoStartTimer autoStartTimer;
     
     /**
@@ -460,6 +462,9 @@ public class ArenaImpl implements Arena
             setHealth(p, 20);
             p.setFoodLevel(20);
             assignClassPermissions(p);
+            
+            // Add custom boosts to player inventory
+            List<ItemStack> boosts = plugin.getCustomConfig().getBoosts(p);
             arenaPlayerMap.get(p).resetStats();
         }
         
@@ -535,6 +540,13 @@ public class ArenaImpl implements Arena
         // Restore enabled status.
         enabled = en;
         
+        if (arenaName == null) {
+        	arenaName = Methods.findArenaName(name);
+        }
+        if (arenaName != null && arenaName != name) {
+        	Methods.broadcastArenaOpen((String) this.arenaName);
+        }
+        
         return true;
     }
 
@@ -582,7 +594,7 @@ public class ArenaImpl implements Arena
         MAUtils.sitPets(p);
         setHealth(p, 20);
         p.setFoodLevel(20);
-        p.setGameMode(GameMode.SURVIVAL);
+        p.setGameMode(GameMode.ADVENTURE);
         movePlayerToLobby(p);
         
         arenaPlayerMap.put(p, new ArenaPlayer(p, this, plugin));
@@ -1270,8 +1282,12 @@ public class ArenaImpl implements Arena
             Messenger.tellPlayer(p, Msg.JOIN_ARENA_IS_RUNNING);
         else if (!plugin.has(p, "mobarena.arenas." + configName()))
             Messenger.tellPlayer(p, Msg.JOIN_ARENA_PERMISSION);
-        else if (getMaxPlayers() > 0 && lobbyPlayers.size() >= getMaxPlayers())
-            Messenger.tellPlayer(p, Msg.JOIN_PLAYER_LIMIT_REACHED);
+        else if (getMaxPlayers() > 0 && lobbyPlayers.size() >= getMaxPlayers()) {
+        	if (!p.hasPermission("mobarena.vip.bypassplayercap"))
+        		Messenger.tellPlayer(p, Msg.JOIN_PLAYER_LIMIT_REACHED);
+        	else
+        		return true;
+        }
         else if (getJoinDistance() > 0 && !region.contains(p.getLocation(), getJoinDistance()))
             Messenger.tellPlayer(p, Msg.JOIN_TOO_FAR);
         else if (settings.getBoolean("require-empty-inv-join", true) && !InventoryManager.hasEmptyInventory(p))
