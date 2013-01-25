@@ -11,6 +11,7 @@ import org.bukkit.entity.Creature;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.PigZombie;
 import org.bukkit.entity.Sheep;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Skeleton.SkeletonType;
@@ -83,10 +84,7 @@ public enum MACreature
     WITHER(EntityType.WITHER),            WITHERS(EntityType.WITHER),
     WITHERSKELETON(EntityType.SKELETON),  WITHERSKELETONS(EntityType.SKELETON),
     BABYZOMBIE(EntityType.ZOMBIE),        BABYZOMBIES(EntityType.ZOMBIE),
-    VILLAGERZOMBIE(EntityType.ZOMBIE),  VILLAGERZOMBIES(EntityType.ZOMBIE),
-    
-    // Custom creatures
-    BABYVILLAGERZOMBIE(EntityType.ZOMBIE), BABYVILLAGERZOMBIES(EntityType.ZOMBIE);
+    ZOMBIEVILLAGER(EntityType.ZOMBIE),    ZOMBIEVILLAGERS(EntityType.ZOMBIE);
     
     private List<DyeColor> colors = Arrays.asList(DyeColor.values());
     private EntityType type;
@@ -156,26 +154,21 @@ public enum MACreature
             	break;
             case ZOMBIEPIGMAN:
             case ZOMBIEPIGMEN:
+            	((PigZombie) e).getEquipment().setItemInHand(new ItemStack(Material.GOLD_SWORD, 1));
             	break;
+            case ZOMBIEVILLAGER:
+            case ZOMBIEVILLAGERS:
+                ((Zombie) e).setVillager(true);
+                break;
+            case BABYZOMBIE:
+            case BABYZOMBIES:
+                ((Zombie) e).setBaby(true);
+                break;
             case WITHERSKELETON:
             case WITHERSKELETONS:
                 ((Skeleton) e).getEquipment().setItemInHand(new ItemStack(Material.STONE_SWORD, 1));
                 ((Skeleton) e).setSkeletonType(SkeletonType.WITHER);
                 break;
-            case BABYZOMBIE:
-            case BABYZOMBIES:
-            	((Zombie) e).setBaby(true);
-            	((Zombie) e).setVillager(false);
-            	break;
-            case VILLAGERZOMBIE:
-            case VILLAGERZOMBIES:
-            	((Zombie)e).setVillager(true);
-            	break;
-            case BABYVILLAGERZOMBIE:
-            case BABYVILLAGERZOMBIES:
-            	((Zombie) e).setBaby(true);
-            	((Zombie) e).setVillager(true);
-            	break;
             default:
                 break;
         }

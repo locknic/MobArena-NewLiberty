@@ -73,9 +73,7 @@ public enum Msg
     MISC_MULTIPLE_MATCHES("Did you mean one of these commands?"),
     MISC_NO_MATCHES("Command not found. Type /ma help"),
     MISC_MA_LEAVE_REMINDER("Remember to use /ma leave when you are done."),
-    MISC_NONE("<none>"),
-    	ARENA_OPEN(" has finished, and is now open!"),
-    	MISC_ARENAS_OPEN("Arenas open/available to join: ");
+    MISC_NONE("<none>");
     
     private String msg, spoutMsg;
     private Material logo;
