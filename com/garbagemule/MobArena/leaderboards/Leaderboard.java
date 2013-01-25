@@ -242,10 +242,10 @@ public class Leaderboard
     {
         byte data = s.getRawData();
 
-        if (data == 2) return BlockFace.WEST;//BlockFace.NORTH
-        if (data == 3) return BlockFace.EAST;//BlockFace.SOUTH
-        if (data == 4) return BlockFace.SOUTH;//BlockFace.WEST
-        if (data == 5) return BlockFace.NORTH;//BlockFace.EAST
+        if (data == 2) return BlockFace.WEST;//BlockFace.NORTH;
+        if (data == 3) return BlockFace.EAST;//BlockFace.SOUTH;
+        if (data == 4) return BlockFace.SOUTH;//BlockFace.WEST;
+        if (data == 5) return BlockFace.NORTH;//BlockFace.EAST;
         
         return null;
     }

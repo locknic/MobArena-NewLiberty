@@ -309,9 +309,12 @@ public class ArenaMasterImpl implements ArenaMaster
             Messenger.severe("Failed to load class '" + classname + "'.");
             return null;
         }
+        
+        // Check if weapons for this class should be unbreakable
+        boolean unbreakableWeapons = section.getBoolean("unbreakable-weapons", true);
 
         // Create an ArenaClass with the config-file name.
-        ArenaClass arenaClass = new ArenaClass(classname);
+        ArenaClass arenaClass = new ArenaClass(classname, unbreakableWeapons);
 
         // Parse the items-node
         String items = section.getString("items", "");
@@ -349,7 +352,7 @@ public class ArenaMasterImpl implements ArenaMaster
         loadClassPermissions(arenaClass, section);
 
         // Register the permission.
-        registerPermission("mobarena.classes." + lowercase, PermissionDefault.OP).addParent("mobarena.classes", true);
+        registerPermission("mobarena.classes." + lowercase, PermissionDefault.TRUE).addParent("mobarena.classes", true);
 
         // Finally add the class to the classes map.
         classes.put(lowercase, arenaClass);
@@ -524,7 +527,7 @@ public class ArenaMasterImpl implements ArenaMaster
         Arena arena = new ArenaImpl(plugin, config, arenaname, world);
 
         // Register the permission
-        registerPermission("mobarena.arenas." + arenaname.toLowerCase(), PermissionDefault.OP);
+        registerPermission("mobarena.arenas." + arenaname.toLowerCase(), PermissionDefault.TRUE);
 
         // Finally, add it to the arena list.
         arenas.add(arena);

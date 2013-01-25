@@ -5,8 +5,7 @@ import org.bukkit.entity.LivingEntity;
 public class MABoss
 {
     private LivingEntity entity;
-    private int health, health25, maxHealth;
-    private boolean dead, lowHealth;
+    private boolean dead;
     
     /**
      * Create an MABoss from the given entity with the given max health.
@@ -15,13 +14,9 @@ public class MABoss
      */
     public MABoss(LivingEntity entity, int maxHealth) {
         entity.setMaxHealth(maxHealth);
-        entity.setHealth(health);
+        entity.setHealth(maxHealth);
         this.entity    = entity;
         this.dead      = false;
-        this.lowHealth = false;
-        
-        this.health   = this.maxHealth = maxHealth;
-        this.health25 = maxHealth / 4;
     }
     
     /**
