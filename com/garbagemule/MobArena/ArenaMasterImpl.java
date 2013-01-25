@@ -352,7 +352,7 @@ public class ArenaMasterImpl implements ArenaMaster
         loadClassPermissions(arenaClass, section);
 
         // Register the permission.
-        registerPermission("mobarena.classes." + lowercase, PermissionDefault.TRUE).addParent("mobarena.classes", true);
+        registerPermission("mobarena.classes." + lowercase, PermissionDefault.OP).addParent("mobarena.classes", true);
 
         // Finally add the class to the classes map.
         classes.put(lowercase, arenaClass);
@@ -527,7 +527,7 @@ public class ArenaMasterImpl implements ArenaMaster
         Arena arena = new ArenaImpl(plugin, config, arenaname, world);
 
         // Register the permission
-        registerPermission("mobarena.arenas." + arenaname.toLowerCase(), PermissionDefault.TRUE);
+        registerPermission("mobarena.arenas." + arenaname.toLowerCase(), PermissionDefault.OP);
 
         // Finally, add it to the arena list.
         arenas.add(arena);
