@@ -12,7 +12,7 @@ import com.garbagemule.MobArena.framework.ArenaMaster;
     name    = "notready",
     pattern = "notr.*|ready",
     usage   = "/ma notready (<arena>)",
-    desc    = "lists all available arenas",
+    desc    = "lists users in the specified arena that are not flagged as ready",
     permission = "mobarena.use.arenalist"
 )
 public class NotReadyCommand implements Command
