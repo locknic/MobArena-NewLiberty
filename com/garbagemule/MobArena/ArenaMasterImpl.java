@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -309,9 +310,12 @@ public class ArenaMasterImpl implements ArenaMaster
             Messenger.severe("Failed to load class '" + classname + "'.");
             return null;
         }
+        
+        // Check if weapons for this class should be unbreakable
+        boolean unbreakableWeapons = section.getBoolean("unbreakable-weapons", true);
 
         // Create an ArenaClass with the config-file name.
-        ArenaClass arenaClass = new ArenaClass(classname);
+        ArenaClass arenaClass = new ArenaClass(classname, unbreakableWeapons);
 
         // Parse the items-node
         String items = section.getString("items", "");
@@ -486,15 +490,45 @@ public class ArenaMasterImpl implements ArenaMaster
             createArenaNode("default", plugin.getServer().getWorlds().get(0));
             arenanames = config.getKeys("arenas");
         }
-
-        // Establish the list.
+        
         arenas = new LinkedList<Arena>();
-
-        for (String arenaname : arenanames) {
-            loadArena(arenaname);
+        for (World w : Bukkit.getServer().getWorlds()) {
+            loadArenasInWorld(w.getName());
+            selectedArena = arenas.get(0);
         }
-
-        selectedArena = arenas.get(0);
+    }
+    
+    public void loadArenasInWorld(String worldName) {
+        Set<String> arenaNames = config.getKeys("arenas");
+        if (arenaNames == null || arenaNames.isEmpty()) {
+            return;
+        }
+        for (String arenaName : arenaNames) {
+            Arena arena = getArenaWithName(arenaName);
+            if (arena != null) continue;
+            
+            String arenaWorld = config.getString("arenas." + arenaName + ".settings.world", null);
+            if (!arenaWorld.equals(worldName)) continue;
+            
+            loadArena(arenaName);
+        }
+    }
+    
+    public void unloadArenasInWorld(String worldName) {
+        Set<String> arenaNames = config.getKeys("arenas");
+        if (arenaNames == null || arenaNames.isEmpty()) {
+            return;
+        }
+        for (String arenaName : arenaNames) {
+            Arena arena = getArenaWithName(arenaName);
+            if (arena == null) continue;
+            
+            String arenaWorld = arena.getWorld().getName();
+            if (!arenaWorld.equals(worldName)) continue;
+            
+            arena.forceEnd();
+            arenas.remove(arena);
+        }
     }
 
     private Arena loadArena(String arenaname) {
@@ -507,7 +541,7 @@ public class ArenaMasterImpl implements ArenaMaster
             world = plugin.getServer().getWorld(worldName);
 
             if (world == null) {
-                Messenger.severe("The world '" + worldName + "' for arena '" + arenaname + "' does not exist!");
+                Messenger.warning("World '" + worldName + "' for arena '" + arenaname + "' was not found...");
                 return null;
             }
         }
@@ -525,9 +559,15 @@ public class ArenaMasterImpl implements ArenaMaster
 
         // Register the permission
         registerPermission("mobarena.arenas." + arenaname.toLowerCase(), PermissionDefault.OP);
+        
+        // Set the selected arena, if it is null
+        if (selectedArena == null) {
+            selectedArena = arena;
+        }
 
         // Finally, add it to the arena list.
         arenas.add(arena);
+        Messenger.info("Loaded arena '" + arenaname + "'.");
         return arena;
     }
 

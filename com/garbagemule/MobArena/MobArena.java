@@ -28,8 +28,10 @@ import com.garbagemule.MobArena.health.HealthStrategy;
 import com.garbagemule.MobArena.health.HealthStrategyHeroes;
 import com.garbagemule.MobArena.health.HealthStrategyStandard;
 import com.garbagemule.MobArena.listeners.MAGlobalListener;
+import com.garbagemule.MobArena.listeners.MagicSpellsListener;
 import com.garbagemule.MobArena.listeners.SpoutScreenListener;
 import com.garbagemule.MobArena.mortl8324.Methods;
+import com.garbagemule.MobArena.metrics.Metrics;
 import com.garbagemule.MobArena.util.FileUtils;
 import com.garbagemule.MobArena.util.config.Config;
 import com.garbagemule.MobArena.util.config.ConfigUtils;
@@ -77,6 +79,7 @@ public class MobArena extends JavaPlugin
         setupVault();
         setupHeroes();
         setupSpout();
+        setupMagicSpells();
         setupStrategies();
         
         // Set up the ArenaMaster
@@ -92,7 +95,11 @@ public class MobArena extends JavaPlugin
         // Register event listeners
         registerListeners();
         
+        // Make sure config file for arena names are set up
         Methods.createArenaNameFile();
+        
+        // Go go Metrics
+        startMetrics();
         
         // Announce enable!
         Messenger.info("v" + this.getDescription().getVersion() + " enabled.");
@@ -187,6 +194,13 @@ public class MobArena extends JavaPlugin
         hasSpout = true;
     }
     
+    private void setupMagicSpells() {
+        Plugin spells = this.getServer().getPluginManager().getPlugin("MagicSpells");
+        if (spells == null) return;
+        
+        this.getServer().getPluginManager().registerEvents(new MagicSpellsListener(this), this);
+    }
+    
     private void setupStrategies() {
         healthStrategy = (hasHeroes ? new HealthStrategyHeroes() : new HealthStrategyStandard());
     }
@@ -196,6 +210,15 @@ public class MobArena extends JavaPlugin
         if (!dir.exists()) dir.mkdir();
         
         AbilityManager.loadAbilities(dir);
+    }
+    
+    private void startMetrics() {
+        try {
+            Metrics m = new Metrics(this);
+            m.start();
+        } catch (Exception e) {
+            Messenger.warning("y u disable stats :(");
+        }
     }
     
     public HealthStrategy getHealthStrategy() {
@@ -284,6 +307,6 @@ public class MobArena extends JavaPlugin
     }
     
     public CustomConfiguration getCustomConfig() {
-        return customConfig;
+    	return customConfig;
     }
 }
