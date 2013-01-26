@@ -15,11 +15,7 @@ public enum BossHealth
         return (playerCount + 1) * 20 * multiplier;
     }
     
-    public int getMultiplier() {
-        return multiplier;
-    }
-    
     public static BossHealth fromString(String string) {
-        return WaveUtils.getEnumFromString(BossHealth.class, string, null);
+        return WaveUtils.getEnumFromString(BossHealth.class, string, MEDIUM);
     }
 }

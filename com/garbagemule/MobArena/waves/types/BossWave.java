@@ -22,10 +22,7 @@ public class BossWave extends AbstractWave
 {
     private MACreature monster;
     private Set<MABoss> bosses;
-    
-    private boolean useHealthMultiplier;
-    private int healthMultiplier;
-    private int flatHealth;
+    private BossHealth health;
     
     private List<Ability> abilities;
     private boolean activated, abilityAnnounce;
@@ -39,10 +36,6 @@ public class BossWave extends AbstractWave
         this.activated = false;
         this.abilityAnnounce = false;
         this.setType(WaveType.BOSS);
-        
-        this.useHealthMultiplier = true;
-        this.healthMultiplier = 0;
-        this.flatHealth = 0;
     }
     
     @Override
@@ -53,20 +46,11 @@ public class BossWave extends AbstractWave
     }
     
     public int getMaxHealth(int playerCount) {
-        if (useHealthMultiplier) {
-            return (playerCount + 1) * 20 * healthMultiplier;
-        }
-        return flatHealth;
+        return health.getMax(playerCount);
     }
     
     public void setHealth(BossHealth health) {
-        this.healthMultiplier = health.getMultiplier();
-        this.useHealthMultiplier = true;
-    }
-    
-    public void setFlatHealth(int flatHealth) {
-        this.flatHealth = flatHealth;
-        this.useHealthMultiplier = false;
+        this.health = health;
     }
     
     public void addMABoss(MABoss boss) {
