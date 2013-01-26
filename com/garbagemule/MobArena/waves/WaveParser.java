@@ -233,23 +233,7 @@ public class WaveParser
         // Grab the boss health
         String hlth = config.getString("health");
         BossHealth health = BossHealth.fromString(hlth);
-        if (health != null) {
-            result.setHealth(health);
-        } else {
-            try {
-                int flatHealth;
-                if (hlth != null) {
-                    flatHealth = Integer.parseInt(hlth);
-                } else {
-                    flatHealth = config.getInt("health");
-                }
-                result.setFlatHealth(flatHealth);
-            } catch (Exception e) {
-                String warning = "Unable to parse health of boss '%s' in arena '%s'. Defaulting to medium. Value was '%s'";
-                Messenger.warning(String.format(warning, name, arena.configName(), hlth));
-                result.setHealth(BossHealth.MEDIUM);
-            }
-        }
+        result.setHealth(health);
         
         // And the abilities.
         String ablts = config.getString("abilities");

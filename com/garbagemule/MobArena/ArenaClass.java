@@ -20,13 +20,12 @@ public class ArenaClass
     private List<ItemStack> items, armor;
     private Map<String,Boolean> perms;
     private int pets;
-    private boolean unbreakableWeapons;
     
     /**
      * Create a new, empty arena class with the given name.
      * @param name the class name as it appears in the config-file
      */
-    public ArenaClass(String name, boolean unbreakableWeapons) {
+    public ArenaClass(String name) {
         this.configName    = name;
         this.lowercaseName = name.toLowerCase();
         
@@ -34,8 +33,6 @@ public class ArenaClass
         this.armor = new ArrayList<ItemStack>(4);
         this.perms = new HashMap<String,Boolean>();
         this.pets  = 0;
-        
-        this.unbreakableWeapons = unbreakableWeapons;
     }
     
     /**
@@ -107,7 +104,7 @@ public class ArenaClass
     public void addItem(ItemStack stack) {
         if (stack == null) return;
         
-        if (unbreakableWeapons && isWeapon(stack)) {
+        if (isWeapon(stack)) {
             stack.setDurability(Short.MIN_VALUE);
         }
         else if (stack.getType() == Material.BONE) {
