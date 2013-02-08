@@ -69,13 +69,13 @@ public class Messenger
     }
     
     public static boolean tellPlayerNoPrefix(CommandSender p, String msg) {
-        // If the input sender is null or the string is empty, return.
-        if (p == null || msg.equals(" "))
-            return false;
-
-        // Otherwise, send the message with the [MobArena] tag.
-        p.sendMessage(msg);
-        return true;
+    	// If the input sender is null or the string is empty, return.
+    	if (p == null || msg.equals(" "))
+    		return false;
+    	
+    	// Otherwise, send the message with the [MobArena] tag.
+    	p.sendMessage(msg);
+    	return true;
     }
 
     public static boolean tellPlayer(CommandSender p, Msg msg, String s, boolean spout, Material logo) {
