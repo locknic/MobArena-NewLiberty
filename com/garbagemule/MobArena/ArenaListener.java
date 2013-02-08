@@ -98,7 +98,8 @@ public class ArenaListener
             pvpOn,               // pvp-enabled in config
             pvpEnabled = false,  // activated on first wave
             foodRegen,
-            lockFoodLevel;
+            lockFoodLevel,
+            useClassChests;
     @SuppressWarnings("unused")
     private boolean allowTeleport,
             canShare,
@@ -131,6 +132,7 @@ public class ArenaListener
         this.allowTeleport    = s.getBoolean("allow-teleporting",    false);
         this.canShare         = s.getBoolean("share-items-in-arena", true);
         this.autoIgniteTNT    = s.getBoolean("auto-ignite-tnt",      false);
+        this.useClassChests   = s.getBoolean("use-class-chests",     false);
         
         this.classLimits = arena.getClassLimitManager();
 
@@ -814,7 +816,7 @@ public class ArenaListener
         classLimits.playerPickedClass(newAC);
 
         // Delay the inventory stuff to ensure that right-clicking works.
-        delayAssignClass(p, className);
+        delayAssignClass(p, className, sign);
     }
     
     /*private boolean cansPlayerJoinClass(ArenaClass ac, Player p) {
@@ -829,10 +831,52 @@ public class ArenaListener
         return true;
     }*/
 
-    private void delayAssignClass(final Player p, final String className) {
+    private void delayAssignClass(final Player p, final String className, final Sign sign) {
         plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin,new Runnable() {
             public void run() {
                 if (!className.equalsIgnoreCase("random")) {
+                    if (useClassChests) {
+                        BlockFace backwards = ((org.bukkit.material.Sign) sign.getData()).getFacing().getOppositeFace();
+                        Block blockSign   = sign.getBlock();
+                        Block blockBelow  = blockSign.getRelative(BlockFace.DOWN);
+                        Block blockBehind = blockBelow.getRelative(backwards);
+                        
+                        // If the block below this sign is a class sign, swap the order
+                        if (blockBelow.getType() == Material.WALL_SIGN || blockBelow.getType() == Material.SIGN_POST) {
+                            String className = ChatColor.stripColor(((Sign) blockBelow.getState()).getLine(0)).toLowerCase();
+                            if (arena.getClasses().containsKey(className)) {
+                                blockSign = blockBehind;  // Use blockSign as a temp while swapping
+                                blockBehind = blockBelow;
+                                blockBelow = blockSign;
+                            }
+                        }
+                        
+                        // TODO: Make number of searches configurable
+                        // First check the pillar below the sign
+                        Block blockChest = findChestBelow(blockBelow, 6);
+                        
+                        // Then, if no chest was found, check the pillar behind the sign
+                        if (blockChest == null) blockChest = findChestBelow(blockBehind, 6);
+                        
+                        // If a chest was found, get the contents
+                        if (blockChest != null) {
+                            InventoryHolder holder = (InventoryHolder) blockChest.getState();
+                            ItemStack[] contents = holder.getInventory().getContents();
+                            // Guard against double-chests for now
+                            if (contents.length > 36) {
+                                ItemStack[] newContents = new ItemStack[36];
+                                for (int i = 0; i < 36; i++) {
+                                    newContents[i] = contents[i];
+                                }
+                                contents = newContents;
+                            }
+                            arena.assignClassGiveInv(p, className, contents);
+                            p.getInventory().setContents(contents);
+                            Messenger.tellPlayer(p, Msg.LOBBY_CLASS_PICKED, TextUtils.camelCase(className), arena.getClassLogo(className));
+                            return;
+                        }
+                        // Otherwise just fall through and use the items from the config-file
+                    }
                     arena.assignClass(p, className);
                     Messenger.tellPlayer(p, Msg.LOBBY_CLASS_PICKED, TextUtils.camelCase(className), arena.getClassLogo(className));
                 }
@@ -842,6 +886,15 @@ public class ArenaListener
                 }
             }
         });
+    }
+    
+    private Block findChestBelow(Block b, int left) {
+        if (left < 0) return null;
+        
+        if (b.getType() == Material.CHEST) {
+            return b;
+        }
+        return findChestBelow(b.getRelative(BlockFace.DOWN), left - 1);
     }
 
     public void onPlayerQuit(PlayerQuitEvent event) {

@@ -86,6 +86,9 @@ public class ArenaMasterImpl implements ArenaMaster
     }
 
     public Arena getSelectedArena() {
+        if (selectedArena == null && !arenas.isEmpty()) {
+            selectedArena = arenas.get(0);
+        }
         return selectedArena;
     }
 
@@ -353,7 +356,7 @@ public class ArenaMasterImpl implements ArenaMaster
         loadClassPermissions(arenaClass, section);
 
         // Register the permission.
-        registerPermission("mobarena.classes." + lowercase, PermissionDefault.OP).addParent("mobarena.classes", true);
+        registerPermission("mobarena.classes." + lowercase, PermissionDefault.TRUE).addParent("mobarena.classes", true);
 
         // Finally add the class to the classes map.
         classes.put(lowercase, arenaClass);
@@ -488,7 +491,6 @@ public class ArenaMasterImpl implements ArenaMaster
         // If no arenas were found, create a default node.
         if (arenanames == null || arenanames.isEmpty()) {
             createArenaNode("default", plugin.getServer().getWorlds().get(0));
-            arenanames = config.getKeys("arenas");
         }
         
         arenas = new LinkedList<Arena>();
@@ -557,7 +559,7 @@ public class ArenaMasterImpl implements ArenaMaster
         Arena arena = new ArenaImpl(plugin, config, arenaname, world);
 
         // Register the permission
-        registerPermission("mobarena.arenas." + arenaname.toLowerCase(), PermissionDefault.OP);
+        registerPermission("mobarena.arenas." + arenaname.toLowerCase(), PermissionDefault.TRUE);
         
         // Set the selected arena, if it is null
         if (selectedArena == null) {
